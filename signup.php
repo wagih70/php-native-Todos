@@ -2,16 +2,16 @@
 include('src/db/database.php');
 include('src/models/user.php');
 
+
 if(isset($_POST['inputName']) && !empty($_POST['inputName']) && isset($_POST['inputEmail']) && !empty($_POST['inputEmail']) && isset($_POST['inputPassword']) && !empty($_POST['inputPassword'])) {
-  session_start();
   $user = new User;
   $name = $_POST['inputName'];
   $email = $_POST['inputEmail'];
-  $password = crypt($_POST['inputPassword']);
+  $password = crypt($_POST['inputPassword'],'123');
   $token = bin2hex(random_bytes(64));
   $_SESSION["token"] = $token;
   $user->signup($name,$email,$password,$token);
-  header('Location:/php-native/index.php');
+  header('Location:/php-auth/index.php');
 }
 
 ?>

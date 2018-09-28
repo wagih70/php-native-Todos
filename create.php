@@ -1,11 +1,24 @@
 <?php 
 include('src/db/database.php');
 include("src/models/todo.php");
+
+include('src/models/user.php');
+
+if (!$_SESSION['token']) {
+  header('Location:/php-auth/signup.php');
+}
+$user=new User;
+$you = $user->fetchByToken($_SESSION['token'])->fetch_assoc();
+if (!$you) {
+  header('Location:/php-auth/signup.php');
+}
+
+
   if (isset($_POST['body']) && ! empty($_POST['body'])) {
                 $body= $_POST['body'];
                 $todo= new todo;
-               $todo->create($body,1);
-    header('Location:/php-native/index.php');
+               $todo->create($body,$you['id']);
+    header('Location:/php-auth/index.php');
 }
 
 ?>

@@ -2,6 +2,17 @@
 include('src/db/database.php');
 include("src/models/todo.php");
 
+include('src/models/user.php');
+
+if (!$_SESSION['token']) {
+  header('Location:/php-auth/signup.php');
+}
+$user=new User;
+$you = $user->fetchByToken($_SESSION['token'])->fetch_assoc();
+if (!$you) {
+  header('Location:/php-auth/signup.php');
+}
+
     
   
   if (isset($_POST['body']) && !empty($_POST['body'])) {
@@ -9,7 +20,7 @@ include("src/models/todo.php");
     $id = $_GET['id'];
     $todo=new Todo;
     $todo->update($body,$id);
-    header('Location:/php-native/index.php');
+    header('Location:/php-auth/index.php');
   }
  ?>
 

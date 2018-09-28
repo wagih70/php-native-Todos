@@ -6,7 +6,7 @@ class Todo {
     public function index($user_id)
     {
         global $connect;
-        $stmt = $connect->prepare("SELECT * FROM todo WHERE(?)");
+        $stmt = $connect->prepare("SELECT * FROM todo WHERE user_id=?");
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
         return $stmt->get_result();

@@ -1,10 +1,16 @@
 <?php 
 include('src/db/database.php');
 include("src/models/todo.php");
+include('src/models/user.php');
 
-  
- 
-
+if (!$_SESSION['token']) {
+  header('Location:/php-auth/signup.php');
+}
+$user=new User;
+$you = $user->fetchByToken($_SESSION['token'])->fetch_assoc();
+if (!$you) {
+  header('Location:/php-auth/signup.php');
+}
 
 ?>
 
@@ -83,7 +89,7 @@ include("src/models/todo.php");
             </ul>
 
 
-            <a href="http://localhost/backend-php/edit.php?id=<?php echo $id ?>"><button class="btn btn-dark mt-3">Edit Todo</button></a>
+            <a href="http://localhost/php-auth/edit.php?id=<?php echo $id ?>"><button class="btn btn-dark mt-3">Edit Todo</button></a>
 
 
           </div>

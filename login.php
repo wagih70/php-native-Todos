@@ -1,28 +1,28 @@
-<?php 
+<?php
 include('src/db/database.php');
-include('src/models/todo.php');
 include('src/models/user.php');
 
 
-if (!$_SESSION['token']) {
-  header('Location:/php-auth/signup.php');
+
+if(isset($_POST['inputEmail']) && !empty($_POST['inputEmail']) && isset($_POST['inputPassword']) && !empty($_POST['inputPassword'])) {
+  
+  $user = new User;
+  $email = $_POST['inputEmail'];
+  $password = crypt($_POST['inputPassword'],'123'); 
+  $you=$user->login($email,$password)->fetch_assoc();
+  if($you){
+      $token = bin2hex(random_bytes(64));
+      $user->generateToken($email,$password,$token);
+      $_SESSION["token"] = $token;
+      header('Location:/php-auth/index.php');
+    }else{
+      header('Location:/php-auth/signup.php');
+    }
 }
-$user=new User;
-$you = $user->fetchByToken($_SESSION['token'])->fetch_assoc();
-if (!$you) {
-  header('Location:/php-auth/signup.php');
-}
-if(isset($_POST['id']) && !empty($_POST['id'])){
-  $todo = new todo;
-  $id = $_POST['id'];
-  $todo->delete($id);
-  header('Location:/php-auth/index.php');
-}
-// if(isset($_POST['logout']) ){
-//   session_destroy();
-//   header('Location:/php-auth/index.php');
-// }
+
+
 ?>
+
 
 <!doctype html>
 <html lang="en">
@@ -67,60 +67,28 @@ if(isset($_POST['id']) && !empty($_POST['id'])){
           </div>
     </div>
 
-
-    <div class="container">
-         <div class="row">
-           <div class="col-8 text-center offset-2 mt-5">
-            
-
-            <h1>Todos</h1>
-
-
-            <ul class="list-group">
-              <?php
-              $todo = new Todo;
-              $results = $todo->index($you['id']);
-
-              while ($row = $results->fetch_assoc()) {
-                
-              ?>
-              
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-
-                <a href="http://localhost/php-auth/show.php?id=<?php echo $row['id'] ?>
-                ">
-                  <p class="text-left mr-5"> <?php echo $row['body']; ?> </p>   
-                </a>
-
-                <div class="d-flex justify-content-between align-items-center"> 
-                <a href="http://localhost/php-native/edit.php?id=<?php echo $row['id'] ?>">
-                  <button name="submit" class="btn btn-success mr-3">Edit</button>
-                </a>
-
-                <form action='#' method="post">
-                  <input type="hidden" name="id" value="<?php echo $row['id'] ?>">
-                  <button name="submit" class="btn btn-danger">Delete</button>
-                </form>
-
-                </div>
-              </li> 
-              <?php
-              };
-              ?>
-            </ul>
-
-
-            <a href="http://localhost/php-auth/create.php"><button class="btn btn-dark mt-3">Add Todo</button></a>
-
-
-          </div>
-         </div>
-         <form method="post" action="index.php" >
-          <input type="hidden" name="logout">
-           <button value="submit">submit</button>
+   <!--  =================================== main content =================================== -->
+   <div class="text-center container">
+       <div class="row">
+         <form class="form-signin col-md-4 mt-5 pt-5 offset-md-4" action="login.php" method="post">
+           <h1 class="h3 mb-3 font-weight-normal">Please login</h1>
+           <label for="inputEmail" class="sr-only">Email address</label>
+           <input type="email" name="inputEmail" class="form-control mt-2" placeholder="Email address" required autofocus>
+           <label for="inputPassword" class="sr-only">Password</label>
+           <input type="password" name="inputPassword" class="form-control mt-2 mb-3" placeholder="Password" required>
+           <div class="checkbox mb-3">
+             <label>
+               <input type="checkbox" value="remember-me"> Remember me
+             </label>
+           </div>
+           <button id="login-btn" class="btn btn-lg btn-primary btn-block" name="submit" type="submit">Login </button>
+           <p class="mt-5 mb-3 text-muted">Copy Rights &copy;</p>
          </form>
-    </div>
-      <!-- Optional JavaScript -->
+       </div>
+     </div>
+
+
+     <!-- Optional JavaScript -->
       <!-- jQuery first, then Popper.js, then Bootstrap JS -->
       <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
