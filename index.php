@@ -3,12 +3,17 @@ include('src/db/database.php');
 include('src/models/todo.php');
 include('src/models/user.php');
 
+if(!isset($_SESSION)){
+  session_start();
+};
 
-if (!$_SESSION['token']) {
+if (!$_SESSION["token"]) {
   header('Location:/php-auth/signup.php');
 }
+
 $user=new User;
-$you = $user->fetchByToken($_SESSION['token'])->fetch_assoc();
+$you = $user->fetchByToken($_SESSION["token"])->fetch_assoc();
+
 if (!$you) {
   header('Location:/php-auth/signup.php');
 }
@@ -18,10 +23,10 @@ if(isset($_POST['id']) && !empty($_POST['id'])){
   $todo->delete($id);
   header('Location:/php-auth/index.php');
 }
-// if(isset($_POST['logout']) ){
-//   session_destroy();
-//   header('Location:/php-auth/index.php');
-// }
+if(isset($_POST['logout']) ){
+  session_destroy();
+  header('Location:/php-auth/login.php');
+}
 ?>
 
 <!doctype html>
@@ -117,7 +122,7 @@ if(isset($_POST['id']) && !empty($_POST['id'])){
          </div>
          <form method="post" action="index.php" >
           <input type="hidden" name="logout">
-           <button value="submit">submit</button>
+           <button class="btn btn-primary" value="submit">Logout</button>
          </form>
     </div>
       <!-- Optional JavaScript -->

@@ -47,7 +47,7 @@ class User {
         global $connect;
     	
     	try{
-    	$stmt = $connect->prepare("SELECT * FROM user where token=?");
+    	$stmt = $connect->prepare("SELECT * FROM user WHERE token=?");
     	$stmt->bind_param("s", $token);
         $stmt->execute();
         return $stmt->get_result();

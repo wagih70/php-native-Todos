@@ -1,7 +1,10 @@
 <?php
 include('src/db/database.php');
 include('src/models/user.php');
-
+if(!isset($_SESSION)){
+  session_start();
+}
+;
 
 
 if(isset($_POST['inputEmail']) && !empty($_POST['inputEmail']) && isset($_POST['inputPassword']) && !empty($_POST['inputPassword'])) {
@@ -11,12 +14,21 @@ if(isset($_POST['inputEmail']) && !empty($_POST['inputEmail']) && isset($_POST['
   $password = crypt($_POST['inputPassword'],'123'); 
   $you=$user->login($email,$password)->fetch_assoc();
   if($you){
-      $token = bin2hex(random_bytes(64));
-      $user->generateToken($email,$password,$token);
-      $_SESSION["token"] = $token;
-      header('Location:/php-auth/index.php');
-    }else{
-      header('Location:/php-auth/signup.php');
+    $token = bin2hex(random_bytes(64));
+    $result = $user->generateToken($token,$email,$password);
+    $user = new User;
+    $you2 = $user->login($email,$password)->fetch_assoc();
+
+
+    $_SESSION["token"] = $you2['token'];
+    
+
+      // $user->generateToken($email,$password,$token);
+      // $token = bin2hex(random_bytes(64));
+      // $_SESSION["token"] = $token;
+       header('Location:/php-auth/index.php');
+     }else{
+       header('Location:/php-auth/signup.php');
     }
 }
 
